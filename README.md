@@ -106,6 +106,7 @@ http://localhost:5000
 
 ## 📷 Project Documentation
 
+The full visual project documentation is available in the `docs/` folder.
 The project documentation includes:
 
 - Chatbot UI screenshots
@@ -117,6 +118,7 @@ The project documentation includes:
 - Docker Hub repository
 - AWS EC2 hosting
 - Security group configuration
+
 
 ---
 
