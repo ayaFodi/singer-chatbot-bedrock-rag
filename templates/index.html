@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Singer Chatbot{% endblock %}
+
+{% block content %}
+
+<div class="chat-box" id="chat-box">
+    <div class="message bot">
+        Hello! Ask me anything about famous singers 🎶
+    </div>
+</div>
+
+<form class="input-area" onsubmit="sendMessage(event)">
+    <input type="text" id="user-input" placeholder="Ask about a singer..." required>
+    <button type="submit">Send</button>
+</form>
+
+<script>
+async function sendMessage(event) {
+    event.preventDefault();
+
+    const input = document.getElementById("user-input");
+    const chatBox = document.getElementById("chat-box");
+
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    // user message
+    const userMsg = document.createElement("div");
+    userMsg.classList.add("message", "user");
+    userMsg.innerText = userText;
+    chatBox.appendChild(userMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    input.value = "";
+    input.disabled = true;
+
+    const botMsg = document.createElement("div");
+    botMsg.classList.add("message", "bot");
+
+    try {
+        // send to Flask
+        const response = await fetch("/ask", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: userText })
+        });
+
+        let data = {};
+        try {
+            data = await response.json();
+        } catch (e) {
+            data = {};
+        }
+
+        if (!response.ok) {
+            botMsg.innerText = data.answer || "Sorry, I could not process that request.";
+        } else {
+            botMsg.innerText = data.answer || "No answer returned.";
+        }
+    } catch (error) {
+        botMsg.innerText = "Network error. Please try again.";
+    } finally {
+        chatBox.appendChild(botMsg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+        input.disabled = false;
+        input.focus();
+    }
+}
+</script>
+
+{% endblock %}
